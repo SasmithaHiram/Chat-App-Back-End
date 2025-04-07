@@ -47,8 +47,32 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  res.post("Login Route");
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "INVALID CREDENTIALS" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "INVALID CREDENTIALS" });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+  } catch (error) {
+    console.log("ERROR IN LOGIN CONTROLLER", error.message);
+    return res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+  }
 };
 
 export const logout = (req, res) => {
