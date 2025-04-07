@@ -1,5 +1,11 @@
 export const signup = (req, res) => {
-  res.post("Signup Route");
+  const {fullName, email, password} = req.body
+  
+  try {
+    
+  } catch (error) {
+    
+  }
 };
 
 export const login = (req, res) => {
