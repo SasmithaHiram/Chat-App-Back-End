@@ -64,6 +64,8 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "INVALID CREDENTIALS" });
     }
 
+    generateToken(user._id, res);
+
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -92,11 +94,11 @@ export const updateProfile = async (req, res) => {
     const userId = req.user._id;
 
     if (!profilePic) {
-      return res.status(300).json({ message: "PROFILE PIC IS REQUIRED" });
+      return res.status(400).json({ message: "PROFILE PIC IS REQUIRED" });
     }
 
     const uplodeResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await User.findById(
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uplodeResponse.secure_url },
       { new: true }
@@ -104,6 +106,15 @@ export const updateProfile = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.log("ERROR IN UPDATE PROFILE", error);
+    res.status(500).json({ message: "INTERNAL SERVER ERROR" });
+  }
+};
+
+export const checkAuth = (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.log("ERROR IN CEHCKAUTH CONTROLLER", error.message);
     res.status(500).json({ message: "INTERNAL SERVER ERROR" });
   }
 };

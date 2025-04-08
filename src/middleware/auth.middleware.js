@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 import User from "../models/user.model.js";
 
 export const protectRoute = async (req, res, next) => {
@@ -16,16 +16,17 @@ export const protectRoute = async (req, res, next) => {
     if (!decoded) {
       return res.status(401).json({ message: "UNAUTHORIZED - INVALID TOKEN" });
     }
-
-    const user = await User.findById(decoded.userId).select("-passowrd");
+    
+    const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
-      return res.staus(404).json({ message: "USER NOT FOUND" });
+      return res.status(404).json({ message: "USER NOT FOUND" });
     }
 
-    req.user = user;
+    req.user = user
 
-    next();
+    next()
+
   } catch (error) {
     console.log("ERROR IN PROTECT MIDDLEWARE: ", error.message);
     res.status(500).json({ message: "INTERNAL SERVER ERROR" });
